@@ -6,7 +6,7 @@ on:
       api_ref:
         description: Reviewed API commit SHA
         required: true
-        default: e5fd446e10ed56f13c01584dbba14f56a2491bae
+        default: 466fc5ba4757f4011892721398b978438a8c3182
         type: string
       frontend_ref:
         description: Reviewed frontend commit SHA
