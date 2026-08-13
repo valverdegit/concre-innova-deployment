@@ -6,12 +6,12 @@ on:
       api_ref:
         description: Reviewed API commit SHA containing the migration
         required: true
-        default: e5fd446e10ed56f13c01584dbba14f56a2491bae
+        default: 466fc5ba4757f4011892721398b978438a8c3182
         type: string
       migration_file:
         description: SQL file name under Concre_Innova_API/Database/Scripts
         required: true
-        default: 20260813_RevisionCalidadPermisosYConsultas.sql
+        default: 20260814_CatalogoRealMaceteros.sql
         type: string
 
 permissions:
