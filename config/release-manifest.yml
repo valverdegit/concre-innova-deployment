@@ -1,14 +1,14 @@
 environment: demo
-released_at: 2026-08-13T22:04:31Z
+released_at: 2026-08-13T23:00:17Z
 
 api:
   repository: Eguzjimenez/e-commerce-api
-  ref: 72e3a8f7abce20381c50cfaa7224f8783d930e69
+  ref: e5fd446e10ed56f13c01584dbba14f56a2491bae
   project: Concre_Innova_API/Concre_Innova_API.csproj
 
 frontend:
   repository: Eguzjimenez/e-commerce
-  ref: 8fda8b891366ca63acef1d9e76d5d499ca307863
+  ref: 706aa62dee3b940c06cea9d351faffdfa41a7e8a
   directory: concre_innova_website
 
 database:
