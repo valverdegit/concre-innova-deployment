@@ -14,8 +14,9 @@ This repository creates and manages:
 - Azure Static Web Apps for the React frontend.
 - GitHub Actions workflows for validation, provisioning, deployment and cleanup.
 
-The demo reuses the existing `ConcreInnovaDB` Azure SQL database. Its server and
-resource group are external dependencies and are never created or deleted here.
+The demo reuses the existing `free-sql-db-6728341` Azure SQL database. Its
+server and resource group are external dependencies and are never created or
+deleted here.
 
 ## Deployment model
 
@@ -44,7 +45,7 @@ Application versions are pinned in
    [`docs/deployment.md`](docs/deployment.md).
 2. Run `Verify Azure OIDC`.
 3. Run `Provision demo infrastructure`.
-4. Initialize the existing empty `ConcreInnovaDB` database from a reviewed
+4. Initialize the existing empty `free-sql-db-6728341` database from a reviewed
    script or BACPAC.
 5. Set `API_BASE_URL` and the Azure resource-name repository variables.
 6. Run `Deploy demo applications`.

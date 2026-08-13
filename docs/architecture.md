@@ -19,11 +19,11 @@
 - Azure SQL is an existing external dependency in resource group `Predestinador`.
 - Cleanup automation cannot delete or modify the SQL resource group.
 
-## Current deployment prerequisite
+## Runtime configuration
 
-The API currently needs a source change so production CORS reads
-`AllowedOrigins` from configuration. A deployment must not be presented as
-complete until the deployed Static Web Apps origin can call the API.
+Production CORS reads `AllowedOrigins` from configuration. Provisioning sets the
+deployed Static Web Apps origin as `AllowedOrigins__0` on the API App Service;
+other production origins remain blocked.
 
 Uploaded user images currently use the API filesystem. This is acceptable only
 for the short-lived student demo. A durable production deployment should move
