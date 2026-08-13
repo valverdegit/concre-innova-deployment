@@ -3,7 +3,7 @@ released_at: null
 
 api:
   repository: Eguzjimenez/e-commerce-api
-  ref: 5a29add26dd4a5183cf3317db002c20303ec916b
+  ref: 72e3a8f7abce20381c50cfaa7224f8783d930e69
   project: Concre_Innova_API/Concre_Innova_API.csproj
 
 frontend:
@@ -12,7 +12,7 @@ frontend:
   directory: concre_innova_website
 
 database:
-  name: ConcreInnovaDB
+  name: free-sql-db-6728341
   server: hogrider.database.windows.net
   ownership: external
   initial_deployment: full-script-or-bacpac

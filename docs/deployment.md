@@ -28,11 +28,12 @@ API_BASE_URL
 
 ## 2. Configure Azure OIDC
 
-Create a Microsoft Entra application or user-assigned managed identity with a
-federated credential for:
+The demo uses the `mi-github-concre-innova-demo` user-assigned managed identity.
+Its federated credential uses GitHub immutable repository identifiers and the
+`demo` environment:
 
 ```text
-repo:valverdegit/concre-innova-deployment:environment:demo
+repo:valverdegit@157626638/concre-innova-deployment@1333435604:environment:demo
 ```
 
 Grant only the permissions needed for the demo resource group.
@@ -48,7 +49,7 @@ Record its outputs as the repository variables listed above.
 
 ## 4. Initialize the database
 
-Initialize the existing empty `ConcreInnovaDB` database on
+Initialize the existing empty `free-sql-db-6728341` database on
 `hogrider.database.windows.net` using a reviewed full creation script or a
 sanitized BACPAC. Remove personal information, password-reset records and
 uploaded files before export.
