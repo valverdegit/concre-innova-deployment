@@ -13,7 +13,12 @@ AZURE_SQL_CONNECTION_STRING
 JWT_KEY
 EMAIL_USERNAME
 EMAIL_PASSWORD
+SOURCE_REPOSITORIES_TOKEN
 ```
+
+`SOURCE_REPOSITORIES_TOKEN` must be a read-only GitHub token with access to
+`Eguzjimenez/e-commerce-api` and `Eguzjimenez/e-commerce`. It is required
+because the deployment workflow runs in a different private repository.
 
 Add these repository variables after provisioning:
 
