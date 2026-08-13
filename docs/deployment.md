@@ -58,6 +58,12 @@ The BACPAC is an initialization artifact and must not be committed to Git.
 Future schema changes remain versioned in the API repository under
 `Concre_Innova_API/Database/Scripts`.
 
+For an incremental change, run `Apply demo database migration` before deploying
+the API. Provide the reviewed API commit SHA and the migration file name. The
+workflow accepts only dated SQL migration names and explicitly rejects cleanup
+scripts. It reads the database connection only from the protected `demo`
+environment secret and never prints it.
+
 ## 5. Deploy applications
 
 Run `Deploy demo applications`. Keep the default immutable commit SHAs or enter
