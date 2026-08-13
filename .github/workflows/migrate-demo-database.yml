@@ -1,0 +1,74 @@
+name: Apply demo database migration
+
+on:
+  workflow_dispatch:
+    inputs:
+      api_ref:
+        description: Reviewed API commit SHA containing the migration
+        required: true
+        default: e5fd446e10ed56f13c01584dbba14f56a2491bae
+        type: string
+      migration_file:
+        description: SQL file name under Concre_Innova_API/Database/Scripts
+        required: true
+        default: 20260813_RevisionCalidadPermisosYConsultas.sql
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: concre-innova-demo-database
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    environment: demo
+    steps:
+      - name: Validate immutable reference and migration name
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "${{ inputs.api_ref }}" =~ ^[0-9a-f]{40}$ ]]
+          [[ "${{ inputs.migration_file }}" =~ ^[0-9]{8}_[A-Za-z0-9]+\.sql$ ]]
+          [[ "${{ inputs.migration_file }}" != *Limpieza* ]]
+
+      - name: Checkout API migration
+        uses: actions/checkout@v4
+        with:
+          repository: Eguzjimenez/e-commerce-api
+          ref: ${{ inputs.api_ref }}
+          path: api
+          persist-credentials: false
+
+      - name: Apply reviewed SQL migration
+        shell: pwsh
+        env:
+          DATABASE_CONNECTION_STRING: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
+          MIGRATION_FILE: ${{ inputs.migration_file }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+
+          if ([string]::IsNullOrWhiteSpace($env:DATABASE_CONNECTION_STRING)) {
+            throw 'AZURE_SQL_CONNECTION_STRING is required.'
+          }
+
+          $scriptDirectory = Join-Path $PWD 'api/Concre_Innova_API/Database/Scripts'
+          $migrationPath = Join-Path $scriptDirectory $env:MIGRATION_FILE
+
+          if (-not (Test-Path -LiteralPath $migrationPath -PathType Leaf)) {
+            throw "Migration file not found: $($env:MIGRATION_FILE)"
+          }
+
+          Set-PSRepository PSGallery -InstallationPolicy Trusted
+          Install-Module SqlServer -Scope CurrentUser -Force
+          Import-Module SqlServer
+
+          Invoke-Sqlcmd `
+            -ConnectionString $env:DATABASE_CONNECTION_STRING `
+            -InputFile $migrationPath `
+            -AbortOnError `
+            -QueryTimeout 120
+
+          "Applied migration: $($env:MIGRATION_FILE)" >> $env:GITHUB_STEP_SUMMARY
