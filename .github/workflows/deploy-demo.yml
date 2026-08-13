@@ -39,6 +39,7 @@ jobs:
           repository: Eguzjimenez/e-commerce-api
           ref: ${{ inputs.api_ref }}
           path: api
+          token: ${{ secrets.SOURCE_REPOSITORIES_TOKEN }}
           persist-credentials: false
 
       - name: Checkout frontend
@@ -47,6 +48,7 @@ jobs:
           repository: Eguzjimenez/e-commerce
           ref: ${{ inputs.frontend_ref }}
           path: frontend
+          token: ${{ secrets.SOURCE_REPOSITORIES_TOKEN }}
           persist-credentials: false
 
       - name: Set up .NET
