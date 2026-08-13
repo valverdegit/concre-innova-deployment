@@ -9,7 +9,7 @@ Add these environment secrets:
 AZURE_CLIENT_ID
 AZURE_TENANT_ID
 AZURE_SUBSCRIPTION_ID
-SQL_ADMIN_PASSWORD
+AZURE_SQL_CONNECTION_STRING
 JWT_KEY
 EMAIL_USERNAME
 EMAIL_PASSWORD
@@ -36,17 +36,22 @@ repo:valverdegit/concre-innova-deployment:environment:demo
 ```
 
 Grant only the permissions needed for the demo resource group.
+Create `rg-concre-innova-demo` in `Central US` before assigning the identity;
+the identity should have `Contributor` only on this resource group.
 
 ## 3. Provision resources
 
-Run the `Provision demo infrastructure` workflow manually. Record its outputs
-as the repository variables listed above.
+Run `Verify Azure OIDC` first. After it succeeds, run the `Provision demo
+infrastructure` workflow manually. The workflow creates only the API and
+frontend resources in `rg-concre-innova-demo`; it never provisions Azure SQL.
+Record its outputs as the repository variables listed above.
 
 ## 4. Initialize the database
 
-For the first student demonstration, export a reviewed local database to a
-BACPAC and import it into the Azure SQL database. Remove personal information,
-password-reset records and uploaded files before export.
+Initialize the existing empty `ConcreInnovaDB` database on
+`hogrider.database.windows.net` using a reviewed full creation script or a
+sanitized BACPAC. Remove personal information, password-reset records and
+uploaded files before export.
 
 The BACPAC is an initialization artifact and must not be committed to Git.
 Future schema changes remain versioned in the API repository under

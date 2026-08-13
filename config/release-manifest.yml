@@ -13,5 +13,7 @@ frontend:
 
 database:
   name: ConcreInnovaDB
-  initial_deployment: bacpac
+  server: hogrider.database.windows.net
+  ownership: external
+  initial_deployment: full-script-or-bacpac
   migration_source: Concre_Innova_API/Database/Scripts

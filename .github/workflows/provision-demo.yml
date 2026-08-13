@@ -6,7 +6,7 @@ on:
       location:
         description: Azure region
         required: true
-        default: eastus2
+        default: centralus
         type: string
       name_prefix:
         description: Lowercase globally unique resource prefix
@@ -45,12 +45,15 @@ jobs:
         id: deploy
         shell: bash
         env:
-          SQL_ADMIN_PASSWORD: ${{ secrets.SQL_ADMIN_PASSWORD }}
+          DATABASE_CONNECTION_STRING: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
           JWT_KEY: ${{ secrets.JWT_KEY }}
           EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME }}
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
         run: |
           set -euo pipefail
+          [[ -n "$DATABASE_CONNECTION_STRING" ]] || { echo 'AZURE_SQL_CONNECTION_STRING is required.' >&2; exit 1; }
+          [[ -n "$JWT_KEY" ]] || { echo 'JWT_KEY is required.' >&2; exit 1; }
+
           outputs=$(az deployment group create \
             --resource-group "$RESOURCE_GROUP" \
             --template-file infra/main.bicep \
@@ -58,7 +61,7 @@ jobs:
               namePrefix="${{ inputs.name_prefix }}" \
               environmentName=demo \
               location="${{ inputs.location }}" \
-              sqlAdministratorPassword="$SQL_ADMIN_PASSWORD" \
+              databaseConnectionString="$DATABASE_CONNECTION_STRING" \
               jwtKey="$JWT_KEY" \
               emailUsername="$EMAIL_USERNAME" \
               emailPassword="$EMAIL_PASSWORD" \
