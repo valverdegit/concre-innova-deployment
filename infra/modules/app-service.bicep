@@ -1,12 +1,9 @@
 param location string
 param planName string
 param appName string
-param sqlServerFqdn string
-param databaseName string
-param sqlAdministratorLogin string
 
 @secure()
-param sqlAdministratorPassword string
+param databaseConnectionString string
 
 @secure()
 param jwtKey string
@@ -22,8 +19,6 @@ param emailPassword string
 
 param emailSender string
 param tags object
-
-var databaseConnectionString = 'Server=tcp:${sqlServerFqdn},1433;Initial Catalog=${databaseName};Persist Security Info=False;User ID=${sqlAdministratorLogin};Password=${sqlAdministratorPassword};MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
 
 resource plan 'Microsoft.Web/serverfarms@2024-04-01' = {
   name: planName

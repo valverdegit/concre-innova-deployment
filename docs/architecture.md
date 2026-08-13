@@ -15,7 +15,9 @@
 - The API is the authorization and business-rule boundary.
 - Production settings override `appsettings.json` through environment variables.
 - GitHub authenticates to Azure with short-lived OIDC tokens.
-- The entire demo lives in one resource group for simple cleanup.
+- API and frontend resources live in `rg-concre-innova-demo` for simple cleanup.
+- Azure SQL is an existing external dependency in resource group `Predestinador`.
+- Cleanup automation cannot delete or modify the SQL resource group.
 
 ## Current deployment prerequisite
 

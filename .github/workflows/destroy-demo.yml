@@ -16,6 +16,8 @@ jobs:
   destroy:
     runs-on: ubuntu-latest
     environment: demo
+    env:
+      RESOURCE_GROUP: rg-concre-innova-demo
     steps:
       - name: Validate confirmation
         shell: bash
@@ -33,4 +35,4 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Delete demo resource group
-        run: az group delete --name "${{ vars.AZURE_RESOURCE_GROUP }}" --yes --no-wait
+        run: az group delete --name "$RESOURCE_GROUP" --yes --no-wait

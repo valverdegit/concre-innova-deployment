@@ -20,7 +20,7 @@ GitHub secrets are identifiers, not a reusable Azure password:
 
 Runtime secrets required by provisioning:
 
-- `SQL_ADMIN_PASSWORD`
+- `SQL_CONNECTION_STRING`
 - `JWT_KEY`
 - `EMAIL_USERNAME`
 - `EMAIL_PASSWORD`

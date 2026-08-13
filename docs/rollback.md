@@ -20,4 +20,6 @@ tables without a verified backup.
 ## Full environment cleanup
 
 Run `Destroy demo environment` and type `DELETE` when the entire student demo
-environment can be removed.
+application environment can be removed. This deletes only
+`rg-concre-innova-demo`; the existing SQL resources in `Predestinador` are not
+part of the cleanup workflow.

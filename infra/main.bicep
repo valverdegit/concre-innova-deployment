@@ -11,10 +11,9 @@ param namePrefix string = 'concreinnova'
 param environmentName string = 'demo'
 
 param location string = resourceGroup().location
-param sqlAdministratorLogin string = 'concreadmin'
 
 @secure()
-param sqlAdministratorPassword string
+param databaseConnectionString string
 
 @secure()
 param jwtKey string
@@ -34,25 +33,11 @@ var suffix = uniqueString(subscription().subscriptionId, resourceGroup().id)
 var apiName = take('${normalizedPrefix}-${environmentName}-api-${suffix}', 60)
 var planName = take('${normalizedPrefix}-${environmentName}-plan', 40)
 var staticWebAppName = take('${normalizedPrefix}-${environmentName}-web-${suffix}', 60)
-var sqlServerName = take('${normalizedPrefix}-${environmentName}-sql-${suffix}', 63)
-var databaseName = 'ConcreInnovaDB'
 var commonTags = {
   application: 'concre-innova'
   environment: environmentName
   purpose: 'student-demo'
   managedBy: 'bicep'
-}
-
-module sql 'modules/sql-database.bicep' = {
-  name: 'sql-database'
-  params: {
-    location: location
-    serverName: sqlServerName
-    databaseName: databaseName
-    administratorLogin: sqlAdministratorLogin
-    administratorPassword: sqlAdministratorPassword
-    tags: commonTags
-  }
 }
 
 module api 'modules/app-service.bicep' = {
@@ -61,10 +46,7 @@ module api 'modules/app-service.bicep' = {
     location: location
     planName: planName
     appName: apiName
-    sqlServerFqdn: sql.outputs.serverFqdn
-    databaseName: databaseName
-    sqlAdministratorLogin: sqlAdministratorLogin
-    sqlAdministratorPassword: sqlAdministratorPassword
+    databaseConnectionString: databaseConnectionString
     jwtKey: jwtKey
     emailHost: emailHost
     emailPort: emailPort
@@ -88,6 +70,3 @@ output apiAppName string = api.outputs.appName
 output apiUrl string = 'https://${api.outputs.defaultHostName}'
 output staticWebAppName string = web.outputs.appName
 output staticWebAppUrl string = 'https://${web.outputs.defaultHostName}'
-output sqlServerName string = sql.outputs.serverName
-output sqlServerFqdn string = sql.outputs.serverFqdn
-output databaseName string = databaseName
