@@ -1,0 +1,28 @@
+name: Validate deployment repository
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  validate-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate immutable release references
+        shell: pwsh
+        run: ./scripts/validate-release.ps1
+
+  validate-bicep:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile Bicep
+        uses: azure/cli@v2
+        with:
+          inlineScript: az bicep build --file infra/main.bicep --stdout > /dev/null

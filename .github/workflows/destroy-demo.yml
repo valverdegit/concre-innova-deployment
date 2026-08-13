@@ -1,0 +1,36 @@
+name: Destroy demo environment
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: Type DELETE to remove the complete demo resource group
+        required: true
+        type: string
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  destroy:
+    runs-on: ubuntu-latest
+    environment: demo
+    steps:
+      - name: Validate confirmation
+        shell: bash
+        run: |
+          if [[ "${{ inputs.confirmation }}" != 'DELETE' ]]; then
+            echo 'Confirmation must be DELETE.' >&2
+            exit 1
+          fi
+
+      - name: Sign in to Azure with OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Delete demo resource group
+        run: az group delete --name "${{ vars.AZURE_RESOURCE_GROUP }}" --yes --no-wait

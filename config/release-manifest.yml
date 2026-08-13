@@ -1,0 +1,17 @@
+environment: demo
+released_at: null
+
+api:
+  repository: Eguzjimenez/e-commerce-api
+  ref: 5a29add26dd4a5183cf3317db002c20303ec916b
+  project: Concre_Innova_API/Concre_Innova_API.csproj
+
+frontend:
+  repository: Eguzjimenez/e-commerce
+  ref: ae6f12334093cbe7f7e44468820d3d5e39f21376
+  directory: concre_innova_website
+
+database:
+  name: ConcreInnovaDB
+  initial_deployment: bacpac
+  migration_source: Concre_Innova_API/Database/Scripts

@@ -1,0 +1,24 @@
+# Local Azure state
+.azure/
+*.local.bicepparam
+
+# Environment files and secrets
+.env
+.env.*
+!.env.example
+*.publishsettings
+*.pfx
+*.pem
+
+# Generated output
+artifacts/
+out/
+bin/
+obj/
+
+# Editors and operating systems
+.vs/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

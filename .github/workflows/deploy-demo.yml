@@ -1,0 +1,121 @@
+name: Deploy demo applications
+
+on:
+  workflow_dispatch:
+    inputs:
+      api_ref:
+        description: Reviewed API commit SHA
+        required: true
+        default: 5a29add26dd4a5183cf3317db002c20303ec916b
+        type: string
+      frontend_ref:
+        description: Reviewed frontend commit SHA
+        required: true
+        default: ae6f12334093cbe7f7e44468820d3d5e39f21376
+        type: string
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: concre-innova-demo-deployment
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: demo
+    steps:
+      - name: Validate immutable references
+        shell: bash
+        run: |
+          [[ "${{ inputs.api_ref }}" =~ ^[0-9a-f]{40}$ ]]
+          [[ "${{ inputs.frontend_ref }}" =~ ^[0-9a-f]{40}$ ]]
+
+      - name: Checkout API
+        uses: actions/checkout@v4
+        with:
+          repository: Eguzjimenez/e-commerce-api
+          ref: ${{ inputs.api_ref }}
+          path: api
+          persist-credentials: false
+
+      - name: Checkout frontend
+        uses: actions/checkout@v4
+        with:
+          repository: Eguzjimenez/e-commerce
+          ref: ${{ inputs.frontend_ref }}
+          path: frontend
+          persist-credentials: false
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Build and publish API
+        run: |
+          dotnet restore api/Concre_Innova_API.slnx
+          dotnet build api/Concre_Innova_API.slnx --configuration Release --no-restore
+          dotnet test api/Concre_Innova_API.slnx --configuration Release --no-build
+          dotnet publish api/Concre_Innova_API/Concre_Innova_API.csproj --configuration Release --no-build --output api-publish
+
+      - name: Sign in to Azure with OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy API
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ vars.AZURE_API_APP_NAME }}
+          package: api-publish
+
+      - name: Smoke test API
+        shell: bash
+        run: curl --retry 8 --retry-delay 15 --retry-all-errors --fail-with-body "${{ vars.API_BASE_URL }}/api/Productos?pagina=1&tamanoPagina=1"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/concre_innova_website/package-lock.json
+
+      - name: Build and test frontend
+        working-directory: frontend/concre_innova_website
+        env:
+          CI: true
+          REACT_APP_API_URL: ${{ vars.API_BASE_URL }}
+        run: |
+          npm ci
+          npm test -- --watchAll=false --runInBand
+          CI=false npm run build
+
+      - name: Get Static Web Apps deployment token
+        id: static-token
+        shell: bash
+        run: |
+          token=$(az staticwebapp secrets list --name "${{ vars.AZURE_STATIC_WEB_APP_NAME }}" --resource-group "${{ vars.AZURE_RESOURCE_GROUP }}" --query properties.apiKey --output tsv)
+          echo "::add-mask::$token"
+          echo "token=$token" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy frontend
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ steps.static-token.outputs.token }}
+          action: upload
+          app_location: frontend/concre_innova_website/build
+          skip_app_build: true
+          output_location: ''
+
+      - name: Smoke test frontend
+        shell: bash
+        run: |
+          hostname=$(az staticwebapp show --name "${{ vars.AZURE_STATIC_WEB_APP_NAME }}" --resource-group "${{ vars.AZURE_RESOURCE_GROUP }}" --query defaultHostname --output tsv)
+          curl --retry 8 --retry-delay 10 --retry-all-errors --fail-with-body "https://$hostname"
+          echo "Frontend: https://$hostname" >> "$GITHUB_STEP_SUMMARY"
+          echo "API: ${{ vars.API_BASE_URL }}" >> "$GITHUB_STEP_SUMMARY"

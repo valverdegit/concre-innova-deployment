@@ -1,0 +1,87 @@
+name: Provision demo infrastructure
+
+on:
+  workflow_dispatch:
+    inputs:
+      location:
+        description: Azure region
+        required: true
+        default: eastus2
+        type: string
+      name_prefix:
+        description: Lowercase globally unique resource prefix
+        required: true
+        default: concreinnova
+        type: string
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: concre-innova-demo-infrastructure
+  cancel-in-progress: false
+
+jobs:
+  provision:
+    runs-on: ubuntu-latest
+    environment: demo
+    env:
+      RESOURCE_GROUP: rg-concre-innova-demo
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Sign in to Azure with OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Create resource group
+        run: az group create --name "$RESOURCE_GROUP" --location "${{ inputs.location }}" --tags application=concre-innova environment=demo purpose=student-demo
+
+      - name: Deploy Azure resources
+        id: deploy
+        shell: bash
+        env:
+          SQL_ADMIN_PASSWORD: ${{ secrets.SQL_ADMIN_PASSWORD }}
+          JWT_KEY: ${{ secrets.JWT_KEY }}
+          EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+        run: |
+          set -euo pipefail
+          outputs=$(az deployment group create \
+            --resource-group "$RESOURCE_GROUP" \
+            --template-file infra/main.bicep \
+            --parameters \
+              namePrefix="${{ inputs.name_prefix }}" \
+              environmentName=demo \
+              location="${{ inputs.location }}" \
+              sqlAdministratorPassword="$SQL_ADMIN_PASSWORD" \
+              jwtKey="$JWT_KEY" \
+              emailUsername="$EMAIL_USERNAME" \
+              emailPassword="$EMAIL_PASSWORD" \
+            --query properties.outputs \
+            --output json)
+          echo "$outputs" > deployment-outputs.json
+
+          api_name=$(echo "$outputs" | jq -r '.apiAppName.value')
+          frontend_origin=$(echo "$outputs" | jq -r '.staticWebAppUrl.value')
+          az webapp config appsettings set \
+            --resource-group "$RESOURCE_GROUP" \
+            --name "$api_name" \
+            --settings "AllowedOrigins__0=$frontend_origin" \
+            --output none
+
+      - name: Publish deployment summary
+        shell: bash
+        run: |
+          {
+            echo '## Azure resources created'
+            echo
+            echo 'Add the following values as GitHub repository variables:'
+            echo '```json'
+            cat deployment-outputs.json
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
