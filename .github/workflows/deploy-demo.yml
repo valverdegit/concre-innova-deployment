@@ -6,12 +6,12 @@ on:
       api_ref:
         description: Reviewed API commit SHA
         required: true
-        default: 812a21de367dd7e1995317b9a301032ac075ce42
+        default: cac9e97858a788b9863d41437814118b0ff615f2
         type: string
       frontend_ref:
         description: Reviewed frontend commit SHA
         required: true
-        default: c52bacfc81a9be510f955bcad0ba0b6eba09db15
+        default: b2d4afbf63b9c77092c14eebde0512aefa79a563
         type: string
 
 permissions:
