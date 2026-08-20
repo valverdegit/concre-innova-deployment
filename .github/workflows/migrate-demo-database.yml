@@ -6,12 +6,12 @@ on:
       api_ref:
         description: Reviewed API commit SHA containing the migration
         required: true
-        default: cac9e97858a788b9863d41437814118b0ff615f2
+        default: 103921a4890b3143f6f28c4dbab9b04432b17b73
         type: string
       migration_file:
         description: SQL file name under Concre_Innova_API/Database/Scripts
         required: true
-        default: 20260820_InventarioYNormalizacionCategorias.sql
+        default: 20260820_FacturasAdministracion.sql
         type: string
 
 permissions:
