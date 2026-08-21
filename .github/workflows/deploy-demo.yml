@@ -11,7 +11,7 @@ on:
       frontend_ref:
         description: Reviewed frontend commit SHA
         required: true
-        default: 243d540e5c2199a85714b81a02f1daac5101f51a
+        default: ee931a031c1f90fb1bc85257ca7381cdc12ddcbd
         type: string
 
 permissions:
