@@ -34,7 +34,7 @@ jobs:
           [[ "${{ inputs.frontend_ref }}" =~ ^[0-9a-f]{40}$ ]]
 
       - name: Checkout API
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: Eguzjimenez/e-commerce-api
           ref: ${{ inputs.api_ref }}
@@ -42,7 +42,7 @@ jobs:
           persist-credentials: false
 
       - name: Checkout frontend
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: Eguzjimenez/e-commerce
           ref: ${{ inputs.frontend_ref }}
