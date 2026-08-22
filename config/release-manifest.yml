@@ -1,5 +1,5 @@
 environment: demo
-released_at: 2026-08-21T20:24:16-06:00
+released_at: 2026-08-22T04:36:01-06:00
 
 api:
   repository: Eguzjimenez/e-commerce-api
@@ -8,7 +8,7 @@ api:
 
 frontend:
   repository: Eguzjimenez/e-commerce
-  ref: 517cdabe7cc705dcafa225102c314838f3f01d1f
+  ref: 5a178252b0f88651b4baa254a2e5ad99a1391c1c
   directory: concre_innova_website
 
 database:
